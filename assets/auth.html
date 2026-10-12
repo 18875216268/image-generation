@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="/favicon.png">
+<title>图片生成 · 密钥录入</title>
+<style>
+  :root { --bg:#f6f1ea; --card:#ffffff; --line:#e8e1d8; --accent:#e07856; --accent2:#e89a7a;
+          --text:#3f3a34; --muted:#a39a8f; --ok:#3fb972; --err:#e5484d; }
+  * { box-sizing:border-box; }
+  html, body { height:100%; }
+  body { margin:0; display:flex; align-items:center; justify-content:center;
+         background:radial-gradient(1200px 600px at 50% -10%, #fdfaf5, var(--bg)); color:var(--text);
+         font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif; }
+  .card { width:50vw; min-width:360px; max-width:1080px; background:var(--card); border:1px solid var(--line);
+          border-radius:18px; padding:44px 52px; box-shadow:0 20px 60px rgba(140,100,60,.18); }
+  h1 { margin:0 0 12px; font-size:30px; font-weight:800; text-align:center; letter-spacing:.5px;
+       background:linear-gradient(90deg,#ff6b6b,#f59e0b,#8b5cf6,#3b82f6,#ec4899);
+       -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+  .sub { margin:0 0 18px; font-size:15px; line-height:1.7; text-align:center; color:#141414; font-weight:500; }
+  .field { position:relative; }
+  .field input { width:100%; padding:13px 48px 13px 15px; border-radius:10px; border:1px solid var(--line);
+                 background:#faf7f2; color:var(--text); font-size:15px; outline:none;
+                 transition:border-color .2s, box-shadow .2s; }
+  .eye { position:absolute; top:50%; right:12px; transform:translateY(-50%); width:28px; height:28px;
+         display:flex; align-items:center; justify-content:center; border:none; background:transparent;
+         cursor:pointer; color:#b0a89c; border-radius:6px; padding:0; margin:0; transition:color .2s; }
+  .eye:hover { color:var(--accent2); }
+  .eye svg { width:18px; height:18px; }
+  .eye .eye-off { display:none; }
+  .eye.show .eye-on { display:none; }
+  .eye.show .eye-off { display:block; }
+  input::placeholder { color:#b0a89c; }
+  input:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(224,120,86,.18); }
+  .actions { display:flex; gap:10px; margin-top:14px; }
+  #btn { margin-top:0; }
+  .btn-ghost { flex:1; padding:13px; border-radius:10px; cursor:pointer; font-size:15px; font-weight:700;
+               color:#141414; background:transparent; border:1px solid var(--line);
+               transition:border-color .2s, background .2s; }
+  .btn-ghost:hover { border-color:var(--accent); background:rgba(224,120,86,.08); }
+  button.primary { flex:1; width:auto; padding:13px; border:none; border-radius:10px; cursor:pointer;
+           background:linear-gradient(90deg, var(--accent), var(--accent2)); color:#fff; font-size:15px;
+           font-weight:600; transition:opacity .2s, transform .1s; }
+  button.primary:hover:not(:disabled) { opacity:1; background:linear-gradient(90deg,#c95f3d,#d97b57); }
+  button.primary:active:not(:disabled) { transform:scale(.985); background:linear-gradient(90deg,#b95434,#c96f4c); }
+  button.primary:disabled { opacity:.6; cursor:default; }
+  button:hover:not(:disabled) { opacity:.92; }
+  button:active:not(:disabled) { transform:scale(.985); }
+  button:disabled { opacity:.6; cursor:default; }
+  .spin { display:inline-block; width:14px; height:14px; border:2px solid #fff6; border-top-color:#fff;
+          border-radius:50%; animation:sp .7s linear infinite; vertical-align:-2px; margin-right:6px; }
+  @keyframes sp { to { transform:rotate(360deg); } }
+
+  /* 右上角通知：滑入 → 逐渐下移 → 右侧滑出 */
+  .toasts { position:fixed; top:20px; right:20px; display:flex; flex-direction:column; gap:10px; z-index:99; }
+  .toast { min-width:220px; max-width:320px; padding:12px 16px; border-radius:10px; font-size:13px;
+           background:var(--card); border:1px solid var(--line); box-shadow:0 10px 30px rgba(140,100,60,.18);
+           display:flex; align-items:center; gap:8px;
+           animation:toast 3s cubic-bezier(.22,.9,.3,1) forwards; }
+  .toast.ok { border-color:rgba(74,222,128,.4); color:var(--ok); }
+  .toast.err { border-color:rgba(255,107,107,.4); color:var(--err); }
+  .toast .dot { width:8px; height:8px; border-radius:50%; flex:none; }
+  .toast.ok .dot { background:var(--ok); box-shadow:0 0 8px var(--ok); }
+  .toast.err .dot { background:var(--err); box-shadow:0 0 8px var(--err); }
+  @keyframes toast {
+    0%   { transform:translateX(120%) translateY(0); opacity:0; }
+    12%  { transform:translateX(0) translateY(0); opacity:1; }
+    70%  { transform:translateX(0) translateY(26px); opacity:1; }
+    88%  { transform:translateX(0) translateY(26px); opacity:1; }
+    100% { transform:translateX(130%) translateY(26px); opacity:0; }
+  }
+
+  /* 获取 Key 弹窗 */
+  .modal-mask { position:fixed; inset:0; background:rgba(0,0,0,.55); display:flex; align-items:center;
+                justify-content:center; opacity:0; pointer-events:none; transition:opacity .2s; z-index:100; }
+  .modal-mask.show { opacity:1; pointer-events:auto; }
+  .modal { position:relative; width:min(92vw, 420px); background:var(--card); border:1px solid var(--line);
+           border-radius:16px; padding:22px 18px; box-shadow:0 20px 60px rgba(140,100,60,.22);
+           transform:translateY(12px); transition:transform .2s; }
+  .modal-mask.show .modal { transform:translateY(0); }
+  .modal h2 { margin:0; font-size:17px; font-weight:700; text-align:left; letter-spacing:.3px; white-space:nowrap; }
+  .modal .close { position:absolute; top:12px; right:14px; width:30px; height:30px; border:none;
+                  background:transparent; color:var(--muted); font-size:20px; line-height:1; cursor:pointer;
+                  border-radius:6px; }
+  .modal .close:hover { color:var(--text); background:rgba(0,0,0,.05); }
+  .sep { border:none; height:1px; margin:16px 0;
+         background:linear-gradient(90deg, transparent, var(--line) 18%, var(--line) 82%, transparent); }
+  .qr { display:flex; justify-content:center; }
+  .qr img { width:100%; box-sizing:border-box; aspect-ratio:1/1; object-fit:contain; border-radius:12px;
+            background:#fff; padding:10px; }
+  .tip { margin:0; font-size:13px; line-height:1.9; text-align:center; white-space:nowrap; }
+  .hl { color:#d97706; font-weight:700; }           /* 生图Key：深琥珀 */
+  .wx-plat { color:#2563eb; font-weight:700; }      /* 微信公众号：深蓝 */
+  .wx { color:#15803d; font-weight:700; }           /* 木小匣：深微信绿 */
+  .free { color:#db2777; font-weight:700; }         /* 免费Key：深粉 */
+  .need { color:#dc2626; font-weight:700; }         /* 需要更多额度：深红 */
+  .link b { font-weight:800; font-size:15px;
+            background:linear-gradient(90deg,#f472b6,#fbbf24,#60a5fa,#a78bfa);
+            -webkit-background-clip:text; background-clip:text; color:transparent; }  /* 赞助：渐变彩 */
+  .link { color:var(--accent2); text-decoration:none; border-bottom:1px dashed var(--accent2); transition:color .2s; }
+  .link:hover { color:#eda289; border-bottom-color:#eda289; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1>图片生成</h1>
+    <p class="sub">公益也有成本诶，为防滥传滥用，请获取Key再使用啦(･∀･)ﾉ</p>
+    <hr class="sep">
+    <div class="field">
+      <input id="key" type="password" placeholder="请输入API Key后使用......" autocomplete="off" autofocus>
+      <button type="button" class="eye" id="eye" title="显示/隐藏密钥">
+        <svg class="eye-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/>
+        </svg>
+        <svg class="eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+          <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+          <path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>
+        </svg>
+      </button>
+    </div>
+    <div class="actions">
+      <button type="button" class="btn-ghost" id="getKey">获取Key</button>
+      <button type="button" class="primary" id="btn">验证并继续</button>
+    </div>
+  </div>
+  <div class="modal-mask" id="mask">
+    <div class="modal">
+      <button type="button" class="close" id="closeModal" aria-label="关闭">×</button>
+      <h2>👉公益服务不易，多多支持(･∀･)ﾉ🙏</h2>
+      <hr class="sep">
+      <div class="qr"><img src="/qrcode.png" alt="扫码获取 Key"></div>
+      <hr class="sep">
+      <p class="tip">
+        关注<span class="wx-plat">微信公众号</span>“<span class="wx">木小匣</span>”并回复【<span class="hl">生图Key</span>】，获取<span class="free">免费Key</span>！<br>
+        Ps：<span class="need">需要更多额度</span>，可以点击此前往<a class="link" href="https://www.kufaka.com/shop/qimeng" target="_blank" rel="noopener">“<b>赞助</b>”</a>💡
+      </p>
+    </div>
+  </div>
+  <div class="toasts" id="toasts"></div>
+<script>
+  const btn = document.querySelector("#btn");
+  const keyEl = document.querySelector("#key");
+  const toasts = document.querySelector("#toasts");
+
+  // 加载 Bing 每日壁纸作为背景（服务端 /api/bg 代理，规避 CORS）
+  (async () => {
+    try {
+      const r = await fetch("/api/bg", { cache: "no-store" });
+      const d = await r.json();
+      if (d && d.ok && d.url) {
+        document.body.style.backgroundImage =
+          'linear-gradient(rgba(252,248,242,.25),rgba(252,248,242,.25)), url("' + d.url + '")';
+        document.body.style.backgroundSize = "cover";
+        document.body.style.backgroundPosition = "center";
+        document.body.style.backgroundAttachment = "fixed";
+      }
+    } catch (e) { /* 保留 CSS 兜底渐变 */ }
+  })();
+
+  function notify(text, type) {
+    const t = document.createElement("div");
+    t.className = "toast " + type;
+    t.innerHTML = '<span class="dot"></span><span></span>';
+    t.lastChild.textContent = text;
+    toasts.appendChild(t);
+    t.addEventListener("animationend", () => t.remove());
+  }
+
+  async function submit() {
+    const key = keyEl.value.trim();
+    if (!key) { notify("请输入密钥", "err"); return; }
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spin"></span>正在验证…';
+    try {
+      const r = await fetch("/api/key", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ key })
+      });
+      const data = await r.json();
+      if (data.ok) {
+        // 浏览器通常禁止脚本关闭非 window.open 打开的标签页，故先呈现成功态再尝试关闭
+        document.body.innerHTML =
+          '<div class="card"><h1>图片生成</h1>' +
+          '<p class="sub">验证成功！凭证已保存，可以关闭本页面了(･∀･)ﾉ</p></div>';
+        try { window.close(); } catch (e) {}
+      } else {
+        notify(data.msg || "验证失败，请重试", "err");
+        btn.disabled = false;
+        btn.textContent = "验证并继续";
+      }
+    } catch (e) {
+      notify("网络错误，请重试", "err");
+      btn.disabled = false;
+      btn.textContent = "验证并继续";
+    }
+  }
+  btn.addEventListener("click", submit);
+  keyEl.addEventListener("keydown", (e) => { if (e.key === "Enter") submit(); });
+  const eye = document.querySelector("#eye");
+  eye.addEventListener("click", () => {
+    const show = keyEl.type === "password";
+    keyEl.type = show ? "text" : "password";
+    eye.classList.toggle("show", show);
+    keyEl.focus();
+  });
+  const mask = document.querySelector("#mask");
+  document.querySelector("#getKey").addEventListener("click", () => mask.classList.add("show"));
+  document.querySelector("#closeModal").addEventListener("click", () => mask.classList.remove("show"));
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") mask.classList.remove("show"); });
+</script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+{
+  "version": 1,
+  "updated": "2026-10-11",
+  "defaults": {
+    "client": "gpt_image.GPTImageClient",
+    "method": "generate",
+    "model": "gpt-image-2",
+    "size": "1:1",
+    "n": 1,
+    "image_size": null,
+    "aspect_ratio": null,
+    "note": "默认值来自 config.ini；清晰度与 Gemini 比例默认不设，由用户描述推断"
+  },
+  "routes": [
+    {
+      "id": "text_to_image",
+      "when": "用户只给文字描述，未给参考图",
+      "client": "gpt_image.GPTImageClient",
+      "method": "generate",
+      "params": {
+        "prompt": "必填",
+        "size": "按描述推断，默认 1:1",
+        "image_size": "按描述推断（须模型支持该档位）"
+      },
+      "role": "文生图：默认走 gpt-image 系列"
+    },
+    {
+      "id": "image_to_image",
+      "when": "用户提供图片并要求照图修改 / 参考这张图",
+      "client": "gpt_image.GPTImageClient",
+      "method": "generate",
+      "params": {
+        "prompt": "必填",
+        "image": "必填：本地路径 / bytes / base64"
+      },
+      "role": "图生图（编辑）：仅多传 image，其余同文生图"
+    },
+    {
+      "id": "nano_openai_style",
+      "when": "明确要使用 nano-banana 系列，且沿用 OpenAI 风格参数",
+      "client": "nano_banana.NanoBananaClient",
+      "method": "generate",
+      "params": {
+        "prompt": "必填",
+        "size": "可选",
+        "image_size": "可选",
+        "image": "可选"
+      },
+      "role": "nano-banana 的 OpenAI 兼容入口（与 gpt-image 同路径，仅模型取值不同）"
+    },
+    {
+      "id": "nano_gemini_style",
+      "when": "使用 nano-banana 系列且以宽高比（aspect_ratio）表达构图",
+      "client": "nano_banana.NanoBananaClient",
+      "method": "generate_gemini",
+      "params": {
+        "prompt": "必填",
+        "aspect_ratio": "如 16:9 / 9:16 / 1:1",
+        "image_size": "可选"
+      },
+      "role": "Gemini 兼容入口：比例走 aspectRatio"
+    },
+    {
+      "id": "no_credential",
+      "when": "无可用 Key，或 Key 校验不通过",
+      "client": "credential.ensure_valid_key",
+      "method": "自动调起",
+      "params": {
+        "credential_timeout": "默认 900 秒（config.ini [common]）"
+      },
+      "role": "凭证层：启本地服务 + 凭证页录入 → 校验通过落盘 config.ini → 继续生图"
+    }
+  ],
+  "redlines": [
+    "生图只能经 scripts/ 下的客户端方法发起，禁止用 requests / urllib / curl 直连生图服务端",
+    "禁止阅读 models/ 下的接口文档后自行拼装 URL / Header / JSON 请求体",
+    "禁止自行实现「提交 → 轮询 → 完成判定」流程（客户端已封装）",
+    "禁止手动构造 Authorization 鉴权请求；Key 由 ensure_valid_key 自动探测与补全",
+    "技能不内置任何密钥；无 Key 时必须走凭证页由用户录入",
+    "用户未提及的比例与清晰度不得臆造；清晰度须该模型支持该档位",
+    "鉴权探测为零成本，不触发真实生图"
+  ]
+}

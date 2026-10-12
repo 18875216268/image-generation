@@ -1,0 +1,66 @@
+{
+  "name": "image-generation",
+  "display_name": "图片生成",
+  "display_name_en": "Image Generation",
+  "author": "木小匣",
+  "version": "1.0.0",
+  "updated": "2026-10-11",
+  "update": {
+    "url": "https://github.com/18875216268/imge-gen",
+    "mode": "本技能从不自检更新，当前以手动替换为准",
+    "cli": null
+  },
+  "layers": [
+    {
+      "id": "main",
+      "path": "SKILL.md",
+      "role": "主入口（原则 / 架构 / 模型系列 / 凭证流程 / 调用方式 / 已知边界）"
+    },
+    {
+      "id": "routes",
+      "path": "routes/",
+      "role": "意图路由（routes.json 事实源 → ROUTES.md 渲染；同步性由 tests 校验）"
+    },
+    {
+      "id": "models",
+      "path": "models/",
+      "role": "模型系列文档（一模型系列一文件夹：模型清单 / 清晰度档位 / 接口契约 / 注意事项）"
+    },
+    {
+      "id": "scripts",
+      "path": "scripts/",
+      "role": "客户端层（base.py 公共底座 + gpt_image / nano_banana 两个系列客户端 + credential.py 凭证层）"
+    },
+    {
+      "id": "assets",
+      "path": "assets/",
+      "role": "凭证页与静态资源（auth.html / qrcode.png / favicon.png）"
+    },
+    {
+      "id": "tests",
+      "path": "tests/",
+      "role": "离线测试（默认值 / 无内置密钥 / 路由同步 / 文档一致 / 凭证门禁）"
+    }
+  ],
+  "network": {
+    "allow_domains": [
+      "www.rightapi.ai",
+      "www.bing.com",
+      "aitohumanize.com",
+      "file3.aitohumanize.com",
+      "file7.aitohumanize.com",
+      "www.kufaka.com"
+    ],
+    "note": "如实声明：www.rightapi.ai 为生图服务端（地址以 config.ini 的 base_url 为准）；www.bing.com 仅用于凭证页背景（失败自动回退 CSS 渐变）；*.aitohumanize.com 为返回图片的存放域；www.kufaka.com 仅为凭证页上的外链（用户点击才访问，技能本身不请求）。图片 URL 由服务端返回，实际域以返回值为准。"
+  },
+  "shell": {
+    "used": false,
+    "commands": [],
+    "note": "不拉起任何外部命令；凭证流程仅通过 webbrowser 打开本机 127.0.0.1 的凭证页。"
+  },
+  "writes": {
+    "user_area": "无独立用户目录",
+    "system": "无",
+    "package": "仅 config.ini 的 [common] api_key 一项（用户在凭证页录入校验通过后写入）；其余运行态零写入"
+  }
+}
