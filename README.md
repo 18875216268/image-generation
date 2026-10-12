@@ -27,7 +27,7 @@ GPTImageClient().generate("雪原上的橘色列车，水彩风格", size="16:9"
 | 日期 | 2026-10-11 |
 | 作者 | 木小匣 |
 | 许可 | MIT |
-| 更新地址 | https://github.com/18875216268/imge-gen |
+| 更新地址 | https://github.com/18875216268/image-generation |
 | 依赖 | Python 3.10+（仅标准库） |
 
 ---

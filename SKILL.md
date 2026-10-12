@@ -19,7 +19,7 @@ license: "MIT"
 compatibility: "需要 Python 3.10+（仅标准库）；需要出网调用生图服务端；首次使用需在本地凭证页录入自有 Key（技能不内置任何密钥）。"
 metadata:
   author: "木小匣"
-  update_url: "https://github.com/18875216268/imge-gen"
+  update_url: "https://github.com/18875216268/image-generation"
   update_policy: "本技能从不自检更新，当前版本以手动替换为准"
   architecture: "routes(意图路由) + models(模型系列文档) + scripts(客户端与凭证层) + assets(凭证页) + tests(离线测试)"
   date: "2026-10-11"
