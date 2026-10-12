@@ -1,6 +1,6 @@
 ---
 name: image-generation
-version: "1.0.0"
+version: "1.0.1"
 display_name: "图片生成"
 display_name_en: "Image Generation"
 description: "文生图、图生图（编辑）技能：帮用户按文字描述生成图片，或基于已有图片改图。内置 gpt-image 与 nano-banana 两大模型系列，可指定参考图、宽高比与清晰度档位。当用户提出 生成图片 / 画一张图 / 生图 / AI 作图 / 参考图改图 / 按这张图改，或需要按指定比例、分辨率、清晰度出图时使用。Agent 只需按用户意图选客户端方法并传参，凭证获取与落盘全自动，技能本身不内置任何密钥。"
@@ -22,7 +22,7 @@ metadata:
   update_url: "https://github.com/18875216268/image-generation"
   update_policy: "本技能从不自检更新，当前版本以手动替换为准"
   architecture: "routes(意图路由) + models(模型系列文档) + scripts(客户端与凭证层) + assets(凭证页) + tests(离线测试)"
-  date: "2026-10-11"
+  date: "2026-10-12"
 ---
 
 # 图片生成 · 文生图与图生图（编辑）

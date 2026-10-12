@@ -23,8 +23,8 @@ GPTImageClient().generate("雪原上的橘色列车，水彩风格", size="16:9"
 | --- | --- |
 | 标识名 | `image-generation`（kebab-case，用于导入与发布） |
 | 名称 | 图片生成 |
-| 版本 | 1.0.0 |
-| 日期 | 2026-10-11 |
+| 版本 | 1.0.1 |
+| 日期 | 2026-10-12 |
 | 作者 | 木小匣 |
 | 许可 | MIT |
 | 更新地址 | https://github.com/18875216268/image-generation |
