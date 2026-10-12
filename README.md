@@ -23,7 +23,7 @@ GPTImageClient().generate("雪原上的橘色列车，水彩风格", size="16:9"
 | --- | --- |
 | 标识名 | `image-generation`（kebab-case，用于导入与发布） |
 | 名称 | 图片生成 |
-| 版本 | 1.0.1 |
+| 版本 | 1.0.2 |
 | 日期 | 2026-10-12 |
 | 作者 | 木小匣 |
 | 许可 | MIT |
@@ -59,7 +59,7 @@ GPTImageClient().generate("雪原上的橘色列车，水彩风格", size="16:9"
 ├── LICENSE              # MIT
 ├── config.ini           # 默认值与凭证落盘
 ├── routes/              # 意图路由（routes.json 事实源 → ROUTES.md 渲染）
-├── models/              # 模型系列文档（一模型系列一文件夹）
+├── models/              # 模型系列文档（一模型系列一文档，适配两级目录约束）
 ├── scripts/             # 客户端层（公共底座 + 两个系列客户端 + 凭证层）
 ├── assets/              # 凭证页与静态资源
 └── tests/               # 离线测试
@@ -70,7 +70,7 @@ GPTImageClient().generate("雪原上的橘色列车，水彩风格", size="16:9"
 | 层 | 职责 | 关键文件 |
 | --- | --- | --- |
 | 意图路由 | 意图 → 客户端 + 方法 + 参数 | `routes/routes.json`、`routes/ROUTES.md` |
-| 模型文档 | 模型清单、档位、接口契约、注意事项 | `models/<系列>/README.md` |
+| 模型文档 | 模型清单、档位、接口契约、注意事项 | `models/<系列>.md` |
 | 客户端层 | 鉴权、提交、轮询、完成判定、提取 URL | `scripts/base.py`、`gpt_image.py`、`nano_banana.py` |
 | 凭证层 | 有效性探测、本地服务、凭证页、落盘 | `scripts/credential.py`、`assets/auth.html` |
 | 测试层 | 离线校验默认值 / 零密钥 / 路由同步 / 文档一致 | `tests/` |
