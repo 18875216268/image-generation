@@ -1,6 +1,6 @@
 ---
 name: image-generation
-version: "1.0.2"
+version: "1.0.1"
 display_name: "图片生成"
 display_name_en: "Image Generation"
 description: "文生图、图生图（编辑）技能：帮用户按文字描述生成图片，或基于已有图片改图。内置 gpt-image 与 nano-banana 两大模型系列，可指定参考图、宽高比与清晰度档位。当用户提出 生成图片 / 画一张图 / 生图 / AI 作图 / 参考图改图 / 按这张图改，或需要按指定比例、分辨率、清晰度出图时使用。Agent 只需按用户意图选客户端方法并传参，凭证获取与落盘全自动，技能本身不内置任何密钥。"
@@ -58,7 +58,7 @@ metadata:
 ├── LICENSE              # MIT
 ├── config.ini           # 默认值与凭证落盘
 ├── routes/              # 意图路由（routes.json 事实源 → ROUTES.md 渲染）
-├── models/              # 模型系列文档（一模型系列一文档，适配两级目录约束）
+├── models/              # 模型系列文档（一模型系列一文件夹）
 ├── scripts/             # 客户端层（公共底座 + 两个系列客户端 + 凭证层）
 ├── assets/              # 凭证页与静态资源
 └── tests/               # 离线测试
@@ -69,7 +69,7 @@ metadata:
 | 层 | 职责 | 关键文件 |
 | --- | --- | --- |
 | 意图路由 | 用户意图 → 客户端 + 方法 + 参数 | `routes/routes.json`、`routes/ROUTES.md` |
-| 模型文档 | 模型清单、档位、接口契约、注意事项 | `models/<系列>.md` |
+| 模型文档 | 模型清单、档位、接口契约、注意事项 | `models/<系列>/README.md` |
 | 客户端层 | 鉴权、提交、轮询、完成判定、提取 URL | `scripts/base.py`、`gpt_image.py`、`nano_banana.py` |
 | 凭证层 | 有效性探测、本地服务、凭证页、落盘 | `scripts/credential.py`、`assets/auth.html` |
 | 测试层 | 离线校验默认值 / 零密钥 / 路由同步 / 文档一致 | `tests/` |

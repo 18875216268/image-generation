@@ -3,7 +3,7 @@
   "display_name": "图片生成",
   "display_name_en": "Image Generation",
   "author": "木小匣",
-  "version": "1.0.2",
+  "version": "1.0.1",
   "updated": "2026-10-12",
   "update": {
     "url": "https://github.com/18875216268/image-generation",
@@ -24,7 +24,7 @@
     {
       "id": "models",
       "path": "models/",
-      "role": "模型系列文档（一模型系列一文档：模型清单 / 清晰度档位 / 接口契约 / 注意事项；适配技能包两级目录约束）"
+      "role": "模型系列文档（一模型系列一文件夹：模型清单 / 清晰度档位 / 接口契约 / 注意事项）"
     },
     {
       "id": "scripts",

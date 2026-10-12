@@ -27,7 +27,7 @@ def run(check):
     check("SKILL.md 无平台字眼", not re.search(r"Right\s*Code|rightapi\.ai", sk))
     check("README.md 无平台字眼", not re.search(r"Right\s*Code|rightapi\.ai", rd))
 
-    for p in ("models/gpt-image.md", "models/nano-banana.md"):
+    for p in ("models/gpt-image/README.md", "models/nano-banana/README.md"):
         check("模型文档存在：%s" % p, os.path.isfile(os.path.join(SKILL_ROOT, p)))
 
     mf = load_json(MANIFEST)
